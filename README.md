@@ -97,4 +97,4 @@ python -m pytest tests/ -q     # 342 passed
 
 ## License
 
-暂未设置 —— 商用/转载前请联系作者。
+[MIT](LICENSE) © 2026 12DDDCCC
