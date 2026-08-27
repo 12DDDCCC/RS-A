@@ -1,0 +1,6 @@
+# 活机身份过滤器: 这些目录的文件在本机含真实用户/路径, 进 git 自动洗成占位符;
+# checkout 时自动复原 (smudge)。src/tests 等发布副本天生已是占位符, 不装过滤器。
+dsh/** filter=rsident-live
+remote-sensing-tools/** filter=rsident-live
+scripts/** filter=rsident-live
+dsh-config/** filter=rsident-live

@@ -32,7 +32,7 @@ COPY_ITEMS = [
 ]
 EXCLUDE_DIRS = {"__pycache__", ".pytest_cache", "node_modules", "cache"}
 SENSITIVE_RES = [
-    "rs-a-user", "your-project-id", "sa@",
+    "xiao" "meng", "ncib-" "491710", "gee-" "agent@",
     r"AI\+遥感",                       # 本机中文路径
     r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
     r"sk-[A-Za-z0-9]{16,}",            # OpenAI 形态 key
@@ -78,12 +78,12 @@ def copy_tree(src: Path, dst: Path):
 # stage 级追加替换: 连扫描规则里的字面模式也净化 (脚本源码随包发布,
 # 检测规则本身会间接暴露身份 —— obsidian 34)
 STAGE_EXTRA = [
-    ("rs-a-user", "rs-a-user"),
-    ("your-project-id", "your-project-id"),
-    ("sa@", "sa@"),
+    ("xiao" "meng", "rs-a-user"),
+    ("ncib-" "491710", "your-project-id"),
+    ("gee-" "agent@", "sa@"),
     # 裸中文路径片段: 兜住脚本源码文本里的转义形态 (D:\\AI\\_workspace),
     # 该形态不是 REDACT 单反斜杠 LHS 的子串, 常规替换永远够不到 (obsidian 34)
-    ("_workspace", "_workspace"),
+    ("AI" "+遥感", "_workspace"),
 ]
 
 
