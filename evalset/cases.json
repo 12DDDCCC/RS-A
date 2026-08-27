@@ -1,0 +1,102 @@
+{
+  "_meta": {
+    "description": "P1-2 评测集: 3 任务类型 × 3 地点 = 9 条判定等价类, 供 evaljudge.judge_code 确定性判定",
+    "principle": "expect 数值全部对齐 src/knowledge/datasets.json (已官方文档核实), 未核实数据一律不收",
+    "bbox_note": "北京/上海 bbox 复用 knowledge/cn_places.json 原值; 塔里木盆地为盆地尺度近似框(非行政边界), 仅够框选区域影像",
+    "index_direction_note": "NIR_minus_Red=NDVI 方向(NIR 在前); Green_minus_NIR_or_SWIR=NDWI(Green,NIR) 或 MNDWI(Green,SWIR) 均合法",
+    "season_note": "夏季=6-8月, 冬季=12-2月(北半球); 季节体现在 task 文本, 由被测代码落实为时间过滤",
+    "_note": "季节轴判定等价已收敛为 9 类; 待判分器支持时间窗校验时再按季节展开并补 expect.years"
+  },
+  "cases": [
+    {
+      "id": "veg-bj-summer",
+      "task": "北京夏季植被覆盖监测，计算 NDVI 并输出分布图",
+      "region": {"lon_min": 115.9, "lat_min": 39.6, "lon_max": 116.8, "lat_max": 40.2},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    },
+    {
+      "id": "veg-sh-summer",
+      "task": "上海夏季植被覆盖监测，计算 NDVI 并输出分布图",
+      "region": {"lon_min": 121.1, "lat_min": 30.9, "lon_max": 121.9, "lat_max": 31.5},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    },
+    {
+      "id": "veg-trl-summer",
+      "task": "塔里木盆地夏季绿洲植被覆盖监测，计算 NDVI 并输出分布图",
+      "region": {"lon_min": 76.0, "lat_min": 37.0, "lon_max": 84.0, "lat_max": 41.0},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    },
+    {
+      "id": "water-bj-summer",
+      "task": "北京夏季水体提取，识别湖泊与河流范围（可用 NDWI 或 MNDWI）",
+      "region": {"lon_min": 115.9, "lat_min": 39.6, "lon_max": 116.8, "lat_max": 40.2},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "COPERNICUS/S1_GRD", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B3", "B8", "B11", "VV", "VH", "SR_B3", "SR_B5", "SR_B6"],
+        "index_direction": "Green_minus_NIR_or_SWIR"
+      }
+    },
+    {
+      "id": "water-sh-summer",
+      "task": "上海夏季水体提取，识别黄浦江与湖泊范围（可用 NDWI 或 MNDWI）",
+      "region": {"lon_min": 121.1, "lat_min": 30.9, "lon_max": 121.9, "lat_max": 31.5},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "COPERNICUS/S1_GRD", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B3", "B8", "B11", "VV", "VH", "SR_B3", "SR_B5", "SR_B6"],
+        "index_direction": "Green_minus_NIR_or_SWIR"
+      }
+    },
+    {
+      "id": "water-trl-summer",
+      "task": "塔里木盆地夏季水体提取，监测塔里木河与湖泊范围（可用 NDWI 或 MNDWI）",
+      "region": {"lon_min": 76.0, "lat_min": 37.0, "lon_max": 84.0, "lat_max": 41.0},
+      "expect": {
+        "datasets": ["COPERNICUS/S2_SR_HARMONIZED", "COPERNICUS/S1_GRD", "LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2"],
+        "bands": ["B3", "B8", "B11", "VV", "VH", "SR_B3", "SR_B5", "SR_B6"],
+        "index_direction": "Green_minus_NIR_or_SWIR"
+      }
+    },
+    {
+      "id": "cd-bj-summer",
+      "task": "北京近十年夏季植被时序变化检测（2014-2024 夏季同期 NDVI 对比）",
+      "region": {"lon_min": 115.9, "lat_min": 39.6, "lon_max": 116.8, "lat_max": 40.2},
+      "expect": {
+        "datasets": ["LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2", "COPERNICUS/S2_SR_HARMONIZED"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    },
+    {
+      "id": "cd-sh-summer",
+      "task": "上海近十年夏季植被时序变化检测（2014-2024 夏季同期 NDVI 对比）",
+      "region": {"lon_min": 121.1, "lat_min": 30.9, "lon_max": 121.9, "lat_max": 31.5},
+      "expect": {
+        "datasets": ["LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2", "COPERNICUS/S2_SR_HARMONIZED"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    },
+    {
+      "id": "cd-trl-summer",
+      "task": "塔里木盆地近十年夏季绿洲时序变化检测（2014-2024 夏季同期 NDVI 对比）",
+      "region": {"lon_min": 76.0, "lat_min": 37.0, "lon_max": 84.0, "lat_max": 41.0},
+      "expect": {
+        "datasets": ["LANDSAT/LC09/C02/T1_L2", "LANDSAT/LC08/C02/T1_L2", "COPERNICUS/S2_SR_HARMONIZED"],
+        "bands": ["B4", "B8", "B8A", "SR_B4", "SR_B5"],
+        "index_direction": "NIR_minus_Red"
+      }
+    }
+  ]
+}

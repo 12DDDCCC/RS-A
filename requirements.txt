@@ -1,0 +1,36 @@
+# ===== 核心依赖 (可核实) =====
+# Agent 编排
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+
+# LLM 调用 (F2): 四家供应商 (deepseek/zhipu/qwen/custom) 全走 OpenAI 兼容协议,
+# openai>=1.0 SDK 换 base_url 即切端点, 见 src/agent/llm_client.py
+openai>=1.0.0
+
+# Web/API
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.0.0
+
+# 遥感影像处理 (结果→JPEG, 栅格读写)
+numpy>=1.26.0
+rasterio>=1.4.0          # GeoTIFF 读取
+pillow>=10.0.0           # 通用图像/JPEG
+matplotlib>=3.9.0        # 可视化出图
+
+# 凭证加密
+cryptography>=43.0.0
+
+# 配置
+python-dotenv>=1.0.0
+
+# ===== 平台 SDK (待核实, 不臆造包名) =====
+# PIE-Engine: 包名与安装方式需登录 engine.piesat.cn 帮助中心核实后补充
+#   (疑似 `pie` 或 `pie-engine`, 未核实, 不盲目写入)
+# GEE (作可核实参考适配器):
+# earthengine-api>=1.4.0  # 取消注释以启用 GEE 适配器
+
+# ===== 测试 =====
+pytest>=8.0.0
+pypinyin

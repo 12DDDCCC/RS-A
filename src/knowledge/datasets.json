@@ -1,0 +1,288 @@
+{
+  "_meta": {
+    "description": "数据集知识库 - 防止 LLM 幻觉波段名/数据集ID的事实地基(RAG源)",
+    "principle": "所有数据均来自GEE官方文档逐字核实,未核实处明确标注。LLM生成代码前必须检索本文件。",
+    "verified_date": "2026-08-04",
+    "source_base": "https://developers.google.com/earth-engine/datasets"
+  },
+  "datasets": {
+    "sentinel2_sr": {
+      "name": "Sentinel-2 Level-2A 地表反射率 (SR)",
+      "gee_collection_id": "COPERNICUS/S2_SR_HARMONIZED",
+      "purpose": "植被分析/NDVI/土地覆盖的默认选择(地表反射率,已做大气校正)",
+      "spatial_resolution_m": 10,
+      "revisit_days": 5,
+      "scale_factor": {
+        "operation": "multiply",
+        "value": 0.0001,
+        "note": "DN×0.0001得真实反射率"
+      },
+      "cloud_field": "CLOUDY_PIXEL_PERCENTAGE",
+      "bands": {
+        "B2": {
+          "wavelength_nm": 496.6,
+          "color": "蓝(Blue)",
+          "resolution_m": 10
+        },
+        "B3": {
+          "wavelength_nm": 560.0,
+          "color": "绿(Green)",
+          "resolution_m": 10
+        },
+        "B4": {
+          "wavelength_nm": 664.5,
+          "color": "红(Red)",
+          "resolution_m": 10
+        },
+        "B8": {
+          "wavelength_nm": 835.1,
+          "color": "近红外(NIR)",
+          "resolution_m": 10
+        },
+        "B8A": {
+          "wavelength_nm": 864.0,
+          "color": "窄近红外(NIR narrow)",
+          "resolution_m": 20
+        },
+        "B11": {
+          "wavelength_nm": 1613.7,
+          "color": "短波红外1(SWIR1)",
+          "resolution_m": 20
+        },
+        "B12": {
+          "wavelength_nm": 2202.4,
+          "color": "短波红外2(SWIR2)",
+          "resolution_m": 20
+        }
+      },
+      "mask_bands": {
+        "_note": "掩膜/分类波段,官方目录无物理波长,故单列一表(同样进validator白名单)",
+        "SCL": {
+          "description": "场景分类(Scene classification,Sen2Cor输出)",
+          "resolution_m": 20
+        },
+        "QA60": {
+          "description": "云掩膜(Cloud mask)",
+          "resolution_m": 60
+        }
+      },
+      "key_indices": {
+        "NDVI": "(B8 - B4) / (B8 + B4)",
+        "NDWI": "(B3 - B8) / (B3 + B8)",
+        "MNDWI": "(B3 - B11) / (B3 + B11)"
+      },
+      "temporal_coverage": {
+        "start": "2017-03-28",
+        "end": null,
+        "_note": "GEE目录页核实: 2017-03-28起,5天重访;2017-2018年L2覆盖非全球"
+      },
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED",
+      "_verified": true
+    },
+    "sentinel2_toa": {
+      "name": "Sentinel-2 Level-1C 顶大气反射率 (TOA)",
+      "gee_collection_id": "COPERNICUS/S2_HARMONIZED",
+      "purpose": "TOA反射率,未做大气校正,SR不可用时备选",
+      "cloud_field": "CLOUDY_PIXEL_PERCENTAGE",
+      "temporal_coverage": {
+        "start": "2015-06-23",
+        "_note": "GEE目录页核实: 2015年6月起; start日期为目录页'June 2015'的月初近似"
+      },
+      "note": "新代码统一用HARMONIZED集合(消除2022年baseline 04.00偏移);含B10卷云波段,SR版无B10",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_HARMONIZED",
+      "_verified": true
+    },
+    "landsat9_c2_l2": {
+      "name": "Landsat 9 Collection 2 Level-2 地表反射率",
+      "gee_collection_id": "LANDSAT/LC09/C02/T1_L2",
+      "purpose": "植被分析(30m,16天重访);Landsat 9自2021年起,联合Landsat 8(LC08)可做2013至今的长时序",
+      "spatial_resolution_m": 30,
+      "revisit_days": 16,
+      "scale_factor": {
+        "operation": "affine",
+        "scale": 2.75e-05,
+        "offset": -0.2,
+        "note": "SR值 = DN×0.0000275 − 0.2 (USGS官方确认)"
+      },
+      "cloud_field": "CLOUD_COVER",
+      "temporal_coverage": {
+        "start": "2021-10-01",
+        "end": null,
+        "_note": "GEE目录页核实: 2021年10月起; LC08自2013年起,长时序需LC08+LC09联合"
+      },
+      "landsat8_temporal_coverage": {
+        "start": "2013-01-01",
+        "end": null,
+        "_note": "年精度: LC08 自2013年起(知识库口径); 精确到日未核实, 校验按年比较故无影响"
+      },
+      "bands": {
+        "SR_B2": {
+          "color": "蓝(Blue)",
+          "wavelength_um": "0.45-0.51"
+        },
+        "SR_B3": {
+          "color": "绿(Green)",
+          "wavelength_um": "0.53-0.59"
+        },
+        "SR_B4": {
+          "color": "红(Red)",
+          "wavelength_um": "0.64-0.67"
+        },
+        "SR_B5": {
+          "color": "近红外(NIR)",
+          "wavelength_um": "0.85-0.88"
+        },
+        "SR_B6": {
+          "color": "短波红外1(SWIR1)",
+          "wavelength_um": "1.57-1.65"
+        }
+      },
+      "key_indices": {
+        "NDVI": "(SR_B5 - SR_B4) / (SR_B5 + SR_B4)",
+        "MNDWI": "(SR_B3 - SR_B6) / (SR_B3 + SR_B6)"
+      },
+      "note": "Landsat 8(LC08)波段编号相同可复用;Landsat 7编号不同,跨传感器不可复用SR_B4/SR_B5",
+      "landsat8_collection_id": "LANDSAT/LC08/C02/T1_L2",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC09_C02_T1_L2",
+      "_verified": true
+    },
+    "sentinel1_grd": {
+      "name": "Sentinel-1 SAR 合成孔径雷达 (GRD)",
+      "gee_collection_id": "COPERNICUS/S1_GRD",
+      "purpose": "水体提取(水体在SAR里呈暗/低后向散射),不受云影响",
+      "spatial_resolution_m": 10,
+      "bands": {
+        "VV": "垂直发射垂直接收(主极化)",
+        "VH": "垂直发射水平接收(交叉极化)"
+      },
+      "unit": "dB",
+      "scale_factor": null,
+      "temporal_coverage": {
+        "start": "2014-10-03",
+        "end": null,
+        "_note": "GEE目录页核实: 2014-10-03起,6天重访"
+      },
+      "note": "水体提取用VV/VH阈值法;无全局魔法阈值,必须用Otsu自适应;干涉宽幅(IW)模式10m",
+      "water_extraction": "VV或VH的Otsu自适应阈值法",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD",
+      "_verified": true
+    },
+    "fao_gaul_level2": {
+      "name": "FAO GAUL 行政边界 (二级行政区, 区县级)",
+      "gee_collection_id": "FAO/GAUL/2015/level2",
+      "purpose": "行政区矢量边界, 非影像; 区县级默认精度模式下由生成代码按 NAME_2 (拼音) 动态解析 roi",
+      "temporal_coverage": {
+        "start": "2014-01-01",
+        "end": null,
+        "_note": "GEE目录页核实: GAUL 2015 版行政区静态底图 (2014 发布); 行政边界非时间序列影像"
+      },
+      "bands": {},
+      "mask_bands": {},
+      "note": "NAME_2 为拼音 (江宁区->Jiangning); 多省重名区县需按任务上下文用 NAME_1 收窄; filter 结果为空必须报错 | 中国实测 (2026-08-25): ADM2 仅 343 条=地级市, 无区县层; 中国区县请用 geo_boundaries_adm2",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level2",
+      "_verified": true,
+      "alt_collection_ids": [
+        "FAO/GAUL/2015",
+        "FAO/GAUL/2015/level0",
+        "FAO/GAUL/2015/level1",
+        "FAO/GAUL_SIMPLIFIED_500m/2015/level2",
+        "FAO/GAUL_SIMPLIFIED_500m/2015"
+      ]
+    },
+    "fao_gaul_level1": {
+      "name": "FAO GAUL 行政边界 (一级行政区, 省/州级)",
+      "gee_collection_id": "FAO/GAUL/2015/level1",
+      "purpose": "省级行政区矢量边界, 非影像; 用于重名区县按 NAME_1 收窄",
+      "temporal_coverage": {
+        "start": "2014-01-01",
+        "end": null,
+        "_note": "GEE目录页核实: GAUL 2015 版行政区静态底图 (2014 发布); 行政边界非时间序列影像"
+      },
+      "bands": {},
+      "mask_bands": {},
+      "note": "与 level2 配合使用: filter(And(eq(NAME_2, 区县拼音), eq(NAME_1, 省拼音))) | 中国实测 (2026-08-25): ADM2 仅 343 条=地级市, 无区县层; 中国区县请用 geo_boundaries_adm2",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level1",
+      "_verified": true
+    },
+    "geo_boundaries_adm2": {
+      "name": "geoBoundaries v6.0.0 行政边界 (二级行政区, 中国为区县级)",
+      "gee_collection_id": "WM/geoLab/geoBoundaries/600/ADM2",
+      "purpose": "行政区矢量边界, 非影像; 中国区县级默认精度模式的主数据源 (2370 条, 市与区县混排)",
+      "temporal_coverage": {
+        "start": "2023-05-01",
+        "end": null,
+        "_note": "GEE官方目录 v6.0.0 (geoLab/WorldBank); 2026-08-25 实测中国 2370 条区县级"
+      },
+      "bands": {},
+      "mask_bands": {},
+      "alt_collection_ids": [
+        "WM/geoLab/geoBoundaries/600/ADM1"
+      ],
+      "note": "字段: shapeGroup(国家码 CHN)/shapeName(全拼连写带后缀: 县=xian 区=qu 旗=qi 市=Shi/shi, 如 江宁区=Jiangningxian); 无父级字段, 重名区县用省界相交收窄: ADM1.filter(And(eq(shapeGroup,'CHN'), eq(shapeName,'<省> Province'))).first().geometry() 再 ADM2.filter(intersects('.geo', 省界)).filter(stringContains('shapeName','<去后缀全拼>')); filter 为空必须 raise ValueError",
+      "source_url": "https://developers.google.com/earth-engine/datasets/catalog/WM_geoLab_geoBoundaries_600_ADM2",
+      "_verified": true
+    }
+  },
+  "indices_reference": {
+    "_note": "同名异义陷阱:NDWI与MNDWI是两个不同公式,绝不可混用",
+    "NDVI": {
+      "full_name": "归一化植被指数 Normalized Difference Vegetation Index",
+      "formula": "(NIR - Red) / (NIR + Red)",
+      "rule": "分子永远是NIR-Red,分母NIR+Red,不可反向(反了植被全为负)",
+      "value_range": "[-1, 1], 正值=植被,0=裸土/建筑,负值=水"
+    },
+    "NDWI": {
+      "full_name": "归一化水体指数 (McFeeters 1996)",
+      "formula": "(Green - NIR) / (Green + NIR)",
+      "rule": "用Green和NIR,适用于开放水体",
+      "warning": "易受建筑阴影干扰,城市区误分多"
+    },
+    "MNDWI": {
+      "full_name": "改进型归一化水体指数 (Xu 2006)",
+      "formula": "(Green - SWIR) / (Green + SWIR)",
+      "rule": "用Green和SWIR,抑制建筑背景,适合城市水体",
+      "warning": "Sentinel-2用B3(Green)和B11(SWIR1);与NDWI不是一回事"
+    },
+    "NDSI": {
+      "full_name": "归一化雪指数 Normalized Difference Snow Index",
+      "formula": "(Green - SWIR1) / (Green + SWIR1)",
+      "rule": "雪在绿光高反射、短波红外低反射"
+    },
+    "NDBI": {
+      "formula": "(SWIR1 - NIR) / (SWIR1 + NIR)",
+      "landsat_formula": "normalizedDifference(['SR_B6', 'SR_B5'])",
+      "s2_formula": "normalizedDifference(['B11', 'B8'])",
+      "range": [
+        -1,
+        1
+      ],
+      "use": "建筑/不透水面指数 (Zha et al. 2003), 值高=建成区; 城市扩展分析常用",
+      "_verified": "公式为学界标准定义 (Zha 2003); 波段映射按 Landsat9 C2 L2 与 S2 SR 波段表"
+    }
+  },
+  "cloud_field_warning": {
+    "_note": "云量元数据字段名不可跨数据集互换",
+    "sentinel2": "CLOUDY_PIXEL_PERCENTAGE",
+    "landsat": "CLOUD_COVER",
+    "violation_example": "在Landsat上用CLOUDY_PIXEL_PERCENTAGE会静默失败(字段不存在)"
+  },
+  "pie_engine_datasets": {
+    "_note": "PIE-Engine(航天宏图)国产高分数据集ID未核实 - 需登录engine.piesat.cn数据集市二次确认",
+    "_verified": false,
+    "gaofen": {
+      "GF1": {
+        "candidate_id": "GF1/L1A/BCD",
+        "_status": "仅来自社区文章,未官方核实"
+      },
+      "GF2": {
+        "candidate_id": "GF2/L1A/Fusion",
+        "_status": "仅来自社区文章,未官方核实"
+      },
+      "GF6": {
+        "candidate_id": null,
+        "_status": "完全未核实到"
+      }
+    },
+    "action_required": "登录 https://engine.piesat.cn 数据集市核实高分系列Collection ID后回填"
+  }
+}

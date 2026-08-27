@@ -1,0 +1,385 @@
+{
+  "spec_version": "1.1",
+  "generated_at": "2026-08-26",
+  "entries": {
+    "mndwi": {
+      "file": "analysis/indices/mndwi.md",
+      "title": "MNDWI",
+      "type": "indices",
+      "domain": "analysis",
+      "aliases": [
+        "改进归一化差异水体指数",
+        "Modified Normalized Difference Water Index",
+        "MNDWI"
+      ],
+      "themes": [
+        "indices",
+        "water"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "ndbi": {
+      "file": "analysis/indices/ndbi.md",
+      "title": "NDBI",
+      "type": "indices",
+      "domain": "analysis",
+      "aliases": [
+        "归一化建筑指数",
+        "Normalized Difference Built-up Index",
+        "NDBI"
+      ],
+      "themes": [
+        "indices",
+        "urban"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "ndsi": {
+      "file": "analysis/indices/ndsi.md",
+      "title": "NDSI",
+      "type": "indices",
+      "domain": "analysis",
+      "aliases": [
+        "归一化雪指数",
+        "Normalized Difference Snow Index",
+        "NDSI"
+      ],
+      "themes": [
+        "indices",
+        "snow"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "ndvi": {
+      "file": "analysis/indices/ndvi.md",
+      "title": "NDVI",
+      "type": "indices",
+      "domain": "analysis",
+      "aliases": [
+        "归一化植被指数",
+        "Normalized Difference Vegetation Index",
+        "NDVI"
+      ],
+      "themes": [
+        "indices",
+        "vegetation"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "ndwi": {
+      "file": "analysis/indices/ndwi.md",
+      "title": "NDWI",
+      "type": "indices",
+      "domain": "analysis",
+      "aliases": [
+        "归一化水体指数",
+        "Normalized Difference Water Index",
+        "NDWI"
+      ],
+      "themes": [
+        "indices",
+        "water"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "change-detection": {
+      "file": "analysis/methods/change-detection.md",
+      "title": "变化检测",
+      "type": "methods",
+      "domain": "analysis",
+      "aliases": [
+        "变化检测",
+        "Change Detection",
+        "后分类比较法 (Post-classification Comparison)"
+      ],
+      "themes": [
+        "methods",
+        "change"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "water-extraction": {
+      "file": "analysis/methods/water-extraction.md",
+      "title": "水体提取",
+      "type": "methods",
+      "domain": "analysis",
+      "aliases": [
+        "水体提取",
+        "Water Body Extraction",
+        "Surface Water Mapping"
+      ],
+      "themes": [
+        "methods",
+        "water"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "landsat9": {
+      "file": "fundamentals/landsat9.md",
+      "title": "Landsat 9",
+      "type": "satellites",
+      "domain": "fundamentals",
+      "aliases": [
+        "陆地卫星九号",
+        "Landsat 9",
+        "LC09"
+      ],
+      "themes": [
+        "satellite",
+        "optical"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "sentinel1": {
+      "file": "fundamentals/sentinel1.md",
+      "title": "Sentinel-1",
+      "type": "satellites",
+      "domain": "fundamentals",
+      "aliases": [
+        "哨兵一号",
+        "Sentinel-1",
+        "S1"
+      ],
+      "themes": [
+        "satellite",
+        "sar"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "sentinel2": {
+      "file": "fundamentals/sentinel2.md",
+      "title": "Sentinel-2",
+      "type": "satellites",
+      "domain": "fundamentals",
+      "aliases": [
+        "哨兵二号",
+        "Sentinel-2",
+        "S2"
+      ],
+      "themes": [
+        "satellite",
+        "optical"
+      ],
+      "verified": true,
+      "template_hint": "land_cover_v1"
+    },
+    "cloud-masking": {
+      "file": "image-processing/cloud-masking.md",
+      "title": "云掩膜",
+      "type": "methods",
+      "domain": "image-processing",
+      "aliases": [
+        "云掩膜",
+        "去云",
+        "Cloud Masking"
+      ],
+      "themes": [
+        "preprocessing",
+        "clouds"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "radiometric-scaling": {
+      "file": "image-processing/radiometric-scaling.md",
+      "title": "辐射定标与反射率缩放",
+      "type": "methods",
+      "domain": "image-processing",
+      "aliases": [
+        "辐射定标",
+        "Radiometric Scaling and Calibration",
+        "DN转反射率"
+      ],
+      "themes": [
+        "preprocessing",
+        "calibration"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "atmospheric-window": {
+      "file": "physics/atmospheric-window.md",
+      "title": "大气窗口",
+      "type": "concept",
+      "domain": "physics",
+      "aliases": [
+        "大气窗口",
+        "Atmospheric Window",
+        "atmospheric window"
+      ],
+      "themes": [
+        "physics",
+        "atmosphere"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "reflectance-forms": {
+      "file": "physics/reflectance-forms.md",
+      "title": "反射率三形态",
+      "type": "concept",
+      "domain": "physics",
+      "aliases": [
+        "反射率三种形态",
+        "Surface Reflectance vs TOA Reflectance",
+        "地表反射率"
+      ],
+      "themes": [
+        "physics",
+        "reflectance"
+      ],
+      "verified": true,
+      "template_hint": null
+    },
+    "computepixels-request-limit": {
+      "file": "pitfalls/computepixels-request-limit.md",
+      "title": "computePixels 请求超 48MB 上限",
+      "type": "pitfalls",
+      "domain": "analysis",
+      "aliases": [
+        "GEE请求体积超限",
+        "Total request size limit",
+        "EEException 50331648"
+      ],
+      "themes": [
+        "pitfalls",
+        "gee",
+        "export"
+      ],
+      "verified": false,
+      "template_hint": null
+    }
+  },
+  "theme_words": {
+    "_meta": {
+      "description": "L2 主题路由词表: 中文任务词 -> 词条 id 集合。人工维护(SPEC §5), 变更须过评审; wiki_build 会校验所有 id 真实存在并合并进 _index.json。",
+      "rule": "关键词避免过短泛词(如'水'), 防止子串命中无关任务文本"
+    },
+    "植被": [
+      "ndvi"
+    ],
+    "绿化": [
+      "ndvi"
+    ],
+    "长势": [
+      "ndvi"
+    ],
+    "估产": [
+      "ndvi"
+    ],
+    "水体": [
+      "water-extraction",
+      "mndwi",
+      "ndwi"
+    ],
+    "湖泊": [
+      "water-extraction",
+      "mndwi",
+      "ndwi"
+    ],
+    "河流": [
+      "water-extraction",
+      "mndwi",
+      "ndwi"
+    ],
+    "洪水": [
+      "water-extraction",
+      "sentinel1",
+      "mndwi"
+    ],
+    "淹没": [
+      "water-extraction",
+      "sentinel1",
+      "mndwi"
+    ],
+    "湿地": [
+      "water-extraction",
+      "mndwi"
+    ],
+    "建筑": [
+      "ndbi"
+    ],
+    "建成区": [
+      "ndbi"
+    ],
+    "不透水面": [
+      "ndbi"
+    ],
+    "城市扩展": [
+      "ndbi",
+      "change-detection"
+    ],
+    "城市": [
+      "ndbi"
+    ],
+    "积雪": [
+      "ndsi"
+    ],
+    "雪灾": [
+      "ndsi"
+    ],
+    "雪盖": [
+      "ndsi"
+    ],
+    "变化检测": [
+      "change-detection"
+    ],
+    "动态监测": [
+      "change-detection"
+    ],
+    "土地利用变化": [
+      "change-detection",
+      "ndbi",
+      "ndvi"
+    ],
+    "土地覆盖": [
+      "ndvi",
+      "mndwi",
+      "ndbi"
+    ],
+    "雷达": [
+      "sentinel1"
+    ],
+    "云污染": [
+      "sentinel1",
+      "cloud-masking"
+    ],
+    "去云": [
+      "cloud-masking"
+    ],
+    "云量": [
+      "cloud-masking"
+    ],
+    "掩膜": [
+      "cloud-masking"
+    ],
+    "定标": [
+      "radiometric-scaling",
+      "reflectance-forms"
+    ],
+    "辐射校正": [
+      "radiometric-scaling",
+      "reflectance-forms"
+    ],
+    "反射率": [
+      "radiometric-scaling",
+      "reflectance-forms"
+    ],
+    "大气校正": [
+      "reflectance-forms",
+      "atmospheric-window"
+    ],
+    "大气窗口": [
+      "atmospheric-window"
+    ]
+  }
+}

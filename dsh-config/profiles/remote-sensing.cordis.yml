@@ -1,0 +1,16 @@
+# RS-Agent 固化 profile (B5): 新机器/重装时复制到
+#   %USERPROFILE%\.dsh\profiles\remote-sensing\cordis.yml
+# 并执行 RS-agent\scripts\install-rs-agent.cmd (建 @rs junction)
+# 之后启动: dsh --profile remote-sensing web --no-open
+# (与 RS-agent/dsh/cordis.patch.yml 内容同源; 此处为 profile 形态固化)
+- id: remote-sensing-tools
+  name: '@rs/remote-sensing-tools'
+  config:
+    apiBase: http://127.0.0.1:8000
+    userId: rs-a-user
+    token: !!js process.env.REMOTE_SENSING_TOKEN || ''
+    workspaceDir: D:/rs-agent-workspace
+    waitTimeoutMs: 600000
+    pollIntervalMs: 3000
+    personaEnabled: true
+    hideContextInjection: true

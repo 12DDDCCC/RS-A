@@ -1,0 +1,46 @@
+# RS-Agent × dsh 挂接补丁 (B2-full 主力形态)
+# 用法: 见 RS-agent/scripts/start-dsh.cmd (自动注入 REMOTE_SENSING_TOKEN)
+#
+# 前置条件:
+#   1. FastAPI 后端已在 :8000 运行 (RS-agent/scripts/start-backend.cmd)
+#   2. 环境变量 REMOTE_SENSING_TOKEN 已注入 (sidecar 脚本经
+#      decrypt_token.py 自动捕获; 手动启动时自行 export)
+#
+# 挂载后模型可见五个 rs_* 原生工具 + 遥感专家人设 section:
+#   rs_get_dataset_catalog / rs_verify_domain_code / rs_execute_analysis /
+#   rs_get_task_status / rs_get_result_image
+- insert:
+    - id: remote-sensing-tools
+      # 经 ~/.dsh/profiles/node_modules/@rs junction 以包名解析:
+      # client-modules 的 require.resolve 只认 node_modules 包名 (file:// 路径无 client half)
+      name: '@rs/remote-sensing-tools'
+      config:
+        apiBase: http://127.0.0.1:8000
+        userId: rs-a-user
+        # 凭证零外泄决议 (Q3): dsh 侧仅持 Bearer, GEE key 永留后端
+        token: !!js process.env.REMOTE_SENSING_TOKEN || ''
+        # 落盘围栏根: 桌面版经 RS_WORKSPACE 注入 exe 旁目录; dev 缺省仓库根
+        workspaceDir: !!js process.env.RS_WORKSPACE || 'D:/rs-agent-workspace'
+        # rs_execute_analysis 阻塞等待上限 10 分钟, 硬顶 900000
+        waitTimeoutMs: 600000
+        pollIntervalMs: 3000
+        personaEnabled: true
+
+# ---- B2-fast MCP 轨 (备选, 与 Claude Desktop 共用的标准接口) ----
+# 双轨并存易致工具名竞争, dsh 内默认走上面的原生插件; 如需 MCP 轨,
+# 注释掉上面整段并取消下面注释:
+# - insert:
+#     - id: mcp-remote-sensing
+#       name: '@deepseek-ai/dsh-mcp-client'
+#       config:
+#         serverName: rs
+#         transport: stdio
+#         command: D:/rs-agent-workspace/.venv/Scripts/python.exe
+#         args:
+#           - D:/rs-agent-workspace/src/mcp_server.py
+#         env:
+#           REMOTE_SENSING_API_BASE: http://127.0.0.1:8000
+#           REMOTE_SENSING_USER: rs-a-user
+#           REMOTE_SENSING_TOKEN: !!js process.env.REMOTE_SENSING_TOKEN || ''
+#         toolCallTimeoutMs: 700000
+#         failOnStartupError: false

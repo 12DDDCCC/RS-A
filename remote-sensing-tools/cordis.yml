@@ -1,0 +1,22 @@
+# RS-Agent × dsh 原生插件挂载补丁 (B2-full + B3 + B4)
+# 用法: dsh web --patch D:/rs-agent-workspace/RS-agent/remote-sensing-tools/cordis.yml
+#
+# 前置条件:
+#   1. FastAPI 后端已在 :8000 运行 (RS-agent/scripts/start-backend.cmd)
+#   2. 环境变量 REMOTE_SENSING_TOKEN 已注入 (!!js 表达式在加载时求值;
+#      也可改在下方 config.token 直接填, 但注意凭证不要入库)
+#
+# 挂载后模型可见五个 rs_* 原生工具, 并注入遥感领域人设 section。
+- insert:
+    - id: remote-sensing-tools
+      name: 'D:/rs-agent-workspace/RS-agent/remote-sensing-tools/src/index.ts'
+      config:
+        apiBase: http://127.0.0.1:8000
+        userId: rs-a-user
+        # 留空则回退读环境变量 REMOTE_SENSING_TOKEN
+        token: !!js process.env.REMOTE_SENSING_TOKEN || ''
+        workspaceDir: D:/rs-agent-workspace
+        # 阻塞等待上限 (ms), 硬顶 900000; 客户端/策略超时须大于它
+        waitTimeoutMs: 600000
+        pollIntervalMs: 3000
+        personaEnabled: true

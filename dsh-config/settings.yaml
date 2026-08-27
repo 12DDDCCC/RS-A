@@ -1,0 +1,22 @@
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+ui-theme:
+  preference: dark
+agent-presets:
+  default: cordis
+
+llm-pi-ai:
+  providers:
+    minimax-cn:
+      apiKeyEnv: MINIMAX_API_KEY
+      api: openai-completions
+      baseURL: http://127.0.0.1:8000/llm/proxy/v1 # 经后端代理: <think>->reasoning_content, dsh 原生折叠
+      models:
+        - id: MiniMax-M3
+          input: [ text ]
+
+# B1: 默认模型路由 -> minimax-cn / MiniMax-M3 (小孟同学决议 Q2)
+agent-default-model:
+  provider: minimax-cn
+  model: MiniMax-M3
+  reasoningEffort: high

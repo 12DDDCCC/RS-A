@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "description": "锚点区先验表: 供第四层防护 (锚点评测) 的 R1 区域先验规则使用, 仅 suspicious 级提醒",
+    "principle": "区间为常识性保守宽区间, 只用于提醒人工复核, 绝不作为 hard_fail 依据; 评审核实教训: 先验宁宽勿窄, 防冤案",
+    "bbox_note": "bbox 为城市/区域近似框, 非精确行政边界, 仅用于中心点粗匹配",
+    "matching_note": "匹配方式: 待测区域 bbox 中心点落入锚点 bbox 即命中, 需 metrics 同时提供 region_bbox 与 season"
+  },
+  "anchor_regions": [
+    {
+      "name": "北京",
+      "bbox": {"lon_min": 115.4, "lat_min": 39.4, "lon_max": 117.5, "lat_max": 41.1},
+      "biome": "暖温带半湿润 (城市+农耕混拌)",
+      "ndvi_summer_range": [0.15, 0.85],
+      "ndvi_winter_range": [-0.05, 0.4],
+      "approximate_prior": true,
+      "_note": "区间为先验估计,非精确测定,仅用于suspicious级提醒"
+    },
+    {
+      "name": "长三角",
+      "bbox": {"lon_min": 118.0, "lat_min": 29.0, "lon_max": 122.5, "lat_max": 32.5},
+      "biome": "亚热带季风 (水网+常绿阔叶+农耕)",
+      "ndvi_summer_range": [0.2, 0.88],
+      "ndvi_winter_range": [0.05, 0.55],
+      "approximate_prior": true,
+      "_note": "区间为先验估计,非精确测定,仅用于suspicious级提醒"
+    },
+    {
+      "name": "珠三角",
+      "bbox": {"lon_min": 112.0, "lat_min": 21.8, "lon_max": 115.5, "lat_max": 24.0},
+      "biome": "南亚热带常绿阔叶 (高度城市化)",
+      "ndvi_summer_range": [0.25, 0.88],
+      "ndvi_winter_range": [0.15, 0.65],
+      "approximate_prior": true,
+      "_note": "区间为先验估计,非精确测定,仅用于suspicious级提醒"
+    },
+    {
+      "name": "塔里木盆地",
+      "bbox": {"lon_min": 76.0, "lat_min": 36.0, "lon_max": 90.0, "lat_max": 42.0},
+      "biome": "暖温带极端干旱荒漠 (绿洲点缀)",
+      "ndvi_summer_range": [-0.1, 0.25],
+      "ndvi_winter_range": [-0.1, 0.2],
+      "approximate_prior": true,
+      "_note": "区间为先验估计,非精确测定,仅用于suspicious级提醒"
+    }
+  ]
+}

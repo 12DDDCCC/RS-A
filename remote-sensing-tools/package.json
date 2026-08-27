@@ -1,0 +1,25 @@
+{
+  "name": "@rs/remote-sensing-tools",
+  "version": "0.2.0",
+  "private": true,
+  "description": "遥感 Agent 原生 dsh 插件：五个经 FastAPI 后端的遥感分析工具 + 领域人设注入 + 导出审批/落盘围栏 + RS-A 品牌",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dsh": {
+    "plugin": true,
+    "client": {
+      "platform": "web"
+    }
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./client/client.js",
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

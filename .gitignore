@@ -1,0 +1,38 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.venv/
+venv/
+*.egg-info/
+
+# ===== 凭证与密钥 (绝对不进 git) =====
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.enc
+*.tok
+secrets/
+credentials.json
+service-account*.json
+
+# ===== 运行时数据 / 依赖 =====
+cache/
+node_modules/
+downloads/
+
+# ===== 打包产物 =====
+build/
+dist/
+*.zip
+
+# ===== OS / IDE =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,53 @@
+{
+  "_meta": {
+    "description": "Wiki 知识源注册表 (source_id -> 书目元数据)。词条的 sources.source_id 必须在本表注册, wiki_build 校验。",
+    "discipline": "无出处不入库; 教材类 reliability=medium, 官方文档/同行评审=high, low(博客)不得为唯一出处",
+    "note": "本表由 RS-agent/scripts/wiki_add_source.py 维护 (禁止手改时绕过脚手架); 摘录文件与本表同名成对"
+  },
+  "book-meianxin-daolun": {
+    "type": "book",
+    "title": "遥感导论",
+    "authors": ["梅安新", "彭望琭", "秦其明", "刘慧平"],
+    "year": 2001,
+    "venue": "高等教育出版社",
+    "reliability": "medium",
+    "registered_date": "2026-08-26"
+  },
+  "book-zhaoyingshi-analysis": {
+    "type": "book",
+    "title": "遥感应用分析原理与方法",
+    "authors": ["赵英时"],
+    "year": 2003,
+    "venue": "科学出版社",
+    "reliability": "medium",
+    "registered_date": "2026-08-26"
+  },
+  "book-lillesand-rsii": {
+    "type": "book",
+    "title": "Remote Sensing and Image Interpretation (7th Edition)",
+    "authors": ["Thomas M. Lillesand", "Ralph W. Kiefer", "Jonathan W. Chipman"],
+    "year": 2015,
+    "venue": "Wiley",
+    "reliability": "medium",
+    "registered_date": "2026-08-26"
+  },
+  "book-cardille-gee": {
+    "type": "book",
+    "title": "Cloud-Based Remote Sensing with Google Earth Engine: Fundamentals and Applications",
+    "authors": ["Jeffrey A. Cardille", "Morgan A. Crowley", "David Saah", "Nicholas E. Clinton"],
+    "year": 2024,
+    "venue": "Springer (官方免费电子书 eebook.org)",
+    "reliability": "high",
+    "registered_date": "2026-08-26"
+  },
+  "doc-gee-catalog": {
+    "type": "doc",
+    "title": "Google Earth Engine 官方数据目录 (datasets catalog 页面)",
+    "authors": ["Google Earth Engine"],
+    "year": 2026,
+    "venue": "https://developers.google.com/earth-engine/datasets",
+    "reliability": "high",
+    "registered_date": "2026-08-26",
+    "_note": "本项目已于 2026-08-04 对目录页逐字核实并固化为 datasets.json (_verified=true); 本源锚点引用该核实结论"
+  }
+}

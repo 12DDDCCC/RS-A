@@ -1,0 +1,419 @@
+{
+  "_meta": {
+    "description": "中国主要城市种子表: 4 直辖市 + 27 省会/首府, 共 31 条, 供 P0-1 地名->bbox 解析使用",
+    "bbox_note": "bbox 为城市中心城区近似框(约 ±0.4° 经度 / ±0.3° 纬度), 非精确行政边界; 准确边界待后续接地图 API 核实",
+    "coordinate_note": "中心点坐标取自公开地理常识, 精度约 ±0.05°, 仅够框选城市尺度影像, 不可用于界址/权属测量",
+    "principle": "防幻觉铁律: 宁可少不可错。只收高置信种子城市, 解析不到由上层反问用户, 绝不编造坐标"
+  },
+  "places": [
+    {
+      "name": "北京",
+      "aliases": [
+        "北京市"
+      ],
+      "bbox": {
+        "lon_min": 115.9,
+        "lat_min": 39.6,
+        "lon_max": 116.8,
+        "lat_max": 40.2
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "上海",
+      "aliases": [
+        "上海市"
+      ],
+      "bbox": {
+        "lon_min": 121.1,
+        "lat_min": 30.9,
+        "lon_max": 121.9,
+        "lat_max": 31.5
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "天津",
+      "aliases": [
+        "天津市"
+      ],
+      "bbox": {
+        "lon_min": 116.8,
+        "lat_min": 38.8,
+        "lon_max": 117.6,
+        "lat_max": 39.4
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "重庆",
+      "aliases": [
+        "重庆市"
+      ],
+      "bbox": {
+        "lon_min": 106.2,
+        "lat_min": 29.3,
+        "lon_max": 107.0,
+        "lat_max": 29.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "广州",
+      "aliases": [
+        "广州市"
+      ],
+      "bbox": {
+        "lon_min": 112.9,
+        "lat_min": 22.8,
+        "lon_max": 113.7,
+        "lat_max": 23.4
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "成都",
+      "aliases": [
+        "成都市"
+      ],
+      "bbox": {
+        "lon_min": 103.7,
+        "lat_min": 30.3,
+        "lon_max": 104.5,
+        "lat_max": 30.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "杭州",
+      "aliases": [
+        "杭州市"
+      ],
+      "bbox": {
+        "lon_min": 119.8,
+        "lat_min": 29.9,
+        "lon_max": 120.6,
+        "lat_max": 30.5
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "武汉",
+      "aliases": [
+        "武汉市"
+      ],
+      "bbox": {
+        "lon_min": 113.9,
+        "lat_min": 30.3,
+        "lon_max": 114.7,
+        "lat_max": 30.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "西安",
+      "aliases": [
+        "西安市"
+      ],
+      "bbox": {
+        "lon_min": 108.5,
+        "lat_min": 34.0,
+        "lon_max": 109.3,
+        "lat_max": 34.6
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "南京",
+      "aliases": [
+        "南京市"
+      ],
+      "bbox": {
+        "lon_min": 118.4,
+        "lat_min": 31.7,
+        "lon_max": 119.2,
+        "lat_max": 32.3
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "郑州",
+      "aliases": [
+        "郑州市"
+      ],
+      "bbox": {
+        "lon_min": 113.2,
+        "lat_min": 34.4,
+        "lon_max": 114.0,
+        "lat_max": 35.0
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "长沙",
+      "aliases": [
+        "长沙市"
+      ],
+      "bbox": {
+        "lon_min": 112.5,
+        "lat_min": 27.9,
+        "lon_max": 113.3,
+        "lat_max": 28.5
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "沈阳",
+      "aliases": [
+        "沈阳市"
+      ],
+      "bbox": {
+        "lon_min": 123.0,
+        "lat_min": 41.5,
+        "lon_max": 123.8,
+        "lat_max": 42.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "哈尔滨",
+      "aliases": [
+        "哈尔滨市"
+      ],
+      "bbox": {
+        "lon_min": 126.1,
+        "lat_min": 45.5,
+        "lon_max": 126.9,
+        "lat_max": 46.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "长春",
+      "aliases": [
+        "长春市"
+      ],
+      "bbox": {
+        "lon_min": 124.9,
+        "lat_min": 43.6,
+        "lon_max": 125.7,
+        "lat_max": 44.2
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "石家庄",
+      "aliases": [
+        "石家庄市"
+      ],
+      "bbox": {
+        "lon_min": 114.1,
+        "lat_min": 37.7,
+        "lon_max": 114.9,
+        "lat_max": 38.3
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "太原",
+      "aliases": [
+        "太原市"
+      ],
+      "bbox": {
+        "lon_min": 112.1,
+        "lat_min": 37.6,
+        "lon_max": 112.9,
+        "lat_max": 38.2
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "合肥",
+      "aliases": [
+        "合肥市"
+      ],
+      "bbox": {
+        "lon_min": 116.8,
+        "lat_min": 31.5,
+        "lon_max": 117.6,
+        "lat_max": 32.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "南昌",
+      "aliases": [
+        "南昌市"
+      ],
+      "bbox": {
+        "lon_min": 115.5,
+        "lat_min": 28.4,
+        "lon_max": 116.3,
+        "lat_max": 29.0
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "福州",
+      "aliases": [
+        "福州市"
+      ],
+      "bbox": {
+        "lon_min": 118.9,
+        "lat_min": 25.8,
+        "lon_max": 119.7,
+        "lat_max": 26.4
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "济南",
+      "aliases": [
+        "济南市"
+      ],
+      "bbox": {
+        "lon_min": 116.7,
+        "lat_min": 36.3,
+        "lon_max": 117.5,
+        "lat_max": 36.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "昆明",
+      "aliases": [
+        "昆明市"
+      ],
+      "bbox": {
+        "lon_min": 102.4,
+        "lat_min": 24.5,
+        "lon_max": 103.2,
+        "lat_max": 25.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "贵阳",
+      "aliases": [
+        "贵阳市"
+      ],
+      "bbox": {
+        "lon_min": 106.2,
+        "lat_min": 26.3,
+        "lon_max": 107.0,
+        "lat_max": 26.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "南宁",
+      "aliases": [
+        "南宁市"
+      ],
+      "bbox": {
+        "lon_min": 108.0,
+        "lat_min": 22.5,
+        "lon_max": 108.8,
+        "lat_max": 23.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "海口",
+      "aliases": [
+        "海口市"
+      ],
+      "bbox": {
+        "lon_min": 109.8,
+        "lat_min": 19.7,
+        "lon_max": 110.6,
+        "lat_max": 20.3
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "兰州",
+      "aliases": [
+        "兰州市"
+      ],
+      "bbox": {
+        "lon_min": 103.4,
+        "lat_min": 35.7,
+        "lon_max": 104.2,
+        "lat_max": 36.3
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "西宁",
+      "aliases": [
+        "西宁市"
+      ],
+      "bbox": {
+        "lon_min": 101.4,
+        "lat_min": 36.3,
+        "lon_max": 102.2,
+        "lat_max": 36.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "银川",
+      "aliases": [
+        "银川市"
+      ],
+      "bbox": {
+        "lon_min": 105.8,
+        "lat_min": 38.2,
+        "lon_max": 106.6,
+        "lat_max": 38.8
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "乌鲁木齐",
+      "aliases": [
+        "乌鲁木齐市"
+      ],
+      "bbox": {
+        "lon_min": 87.2,
+        "lat_min": 43.5,
+        "lon_max": 88.0,
+        "lat_max": 44.1
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "拉萨",
+      "aliases": [
+        "拉萨市"
+      ],
+      "bbox": {
+        "lon_min": 90.7,
+        "lat_min": 29.3,
+        "lon_max": 91.5,
+        "lat_max": 29.9
+      },
+      "bbox_note": "approximate"
+    },
+    {
+      "name": "呼和浩特",
+      "aliases": [
+        "呼和浩特市"
+      ],
+      "bbox": {
+        "lon_min": 111.3,
+        "lat_min": 40.5,
+        "lon_max": 112.1,
+        "lat_max": 41.1
+      },
+      "bbox_note": "approximate"
+    }
+  ],
+  "ambiguous_aliases": {
+    "朝阳": [
+      "朝阳区(北京)",
+      "朝阳市(辽宁)"
+    ]
+  }
+}
