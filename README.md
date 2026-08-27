@@ -10,6 +10,30 @@
 
 ![对话内嵌结果图](docs/screenshots/chat-inline-image.png)
 
+## 架构：双层 Agent
+
+RS-A 是**双层架构**——对话与分工各司其职：
+
+```
+用户（RS-A 网页 / 桌面窗口）
+   │ 中文对话
+   ▼
+【前台】dsh 对话 Agent（DeepSeek Harness, :3080, MiniMax-M3）
+   │  会话编排 · 思考折叠 · 品牌化 UI · 凭证面板
+   │  调用五个 rs_* 工具（remote-sensing-tools 插件）
+   ▼
+【后台】FastAPI 分析引擎（:8000, src/, LangGraph）
+   │  流水线: clarify → plan → generate → execute → diagnose → output
+   │  四层防护: validator 白名单 → reviewer 子Agent → sandbox 试跑 → anchors 锚点评测
+   │  Wiki 知识库防幻觉 · 数据集目录 · 错误分层人话 · 澄清续跑
+   ▼
+GEE 云端执行 ──▶ 结果 JPEG ──▶ /rs-image 同源代理 ──▶ 内嵌回对话
+```
+
+前台负责"听懂人话、决定调用什么"；后台负责"生成遥感代码、防幻觉防算错、
+云端执行出图"。两者经 HTTP 工具边界解耦——引擎不依赖 dsh 也可独立服务
+（MCP/CLI 亦可接入）。
+
 ## 本仓库是什么
 
 `RS-agent/` 是 RS-A 的**自包含发布单元**：把仓库根的引擎源码、dsh 融合配置、
@@ -17,7 +41,7 @@
 
 ```
 RS-agent/
-├── src/                   # FastAPI 后端引擎（LangGraph 主链路 + 四层防护 + Wiki 知识库）
+├── src/                   # FastAPI 分析引擎（LangGraph 流水线 + 四层防护 + Wiki 知识库）
 ├── tests/                 # 342 项测试（白名单/校验/geo/jobs/wiki/制图契约…）
 ├── evalset/ evals/        # 18 用例评测集 + 自动判分
 ├── remote-sensing-tools/  # dsh TS 原生插件：五 rs_* 工具 + 领域人设 + /rs-image 对话内嵌图
