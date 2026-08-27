@@ -24,9 +24,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DEST = ROOT / "RS-agent"
 SELF = Path(__file__).resolve()
 
+# README.md/.gitignore 不再同步: RS-agent 已是独立 GitHub 仓库 (46号),
+# 两文件是仓库门面/独立忽略规则, 用父仓库版覆盖会毁掉门面
 COPY_ITEMS = [
     "src", "tests", "evals", "evalset",
-    "requirements.txt", ".env.example", "README.md", ".gitignore",
+    "requirements.txt", ".env.example",
 ]
 EXCLUDE_DIRS = {"__pycache__", ".pytest_cache", "node_modules", "cache"}
 SENSITIVE_RES = [
