@@ -14,7 +14,7 @@
      (WebView2 清数据在 frozen 环境可能卡住解释器收尾 → 僵尸进程占 8000)
 
 用法: RS-A.exe            桌面窗口模式 (默认)
-      RS-A.exe --browser  兼容旧式浏览器形态 (调试)
+      RS-A.exe --browser  浏览器形态 (调试, 打开 dsh 网页端)
 """
 from __future__ import annotations
 
@@ -251,7 +251,6 @@ def ensure_dsh_up(app_dir: Path) -> bool:
 
 def main() -> None:
     browser_mode = "--browser" in sys.argv
-    browser_mode_8000 = "--ui8000" in sys.argv   # 兼容调试: 仍指内置向导页
     _utf8_console()
     app_dir = _app_dir()
     os.chdir(app_dir)          # cache/ jobs.db runs logs 全部落 exe 旁
@@ -296,9 +295,7 @@ def main() -> None:
     server_thread.start()
 
     if browser_mode:
-        target = ("http://127.0.0.1:8000/ui/" if browser_mode_8000
-                  else DASH_URL)
-        webbrowser.open(target)
+        webbrowser.open(DASH_URL)
         server_thread.join()
         return
 

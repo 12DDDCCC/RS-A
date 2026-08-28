@@ -8,11 +8,10 @@
 a = Analysis(
     ['src/launcher.py'],
     pathex=['.'],
-    # 知识库/Wiki/来源/UI 静态页: 模块 __file__ 在 frozen 下指向
+    # 知识库/Wiki/来源: 模块 __file__ 在 frozen 下指向
     # _MEIPASS/src/..., datas 按同路径放置即可被 Path(__file__) 定位
     datas=[
         ('src/knowledge', 'src/knowledge'),
-        ('src/static', 'src/static'),
         ('evalset', 'evalset'),
         # dsh 挂接补丁: 品牌替换(DeepSeek→RS-A/去预览版)+rs_* 插件+设置凭证面板
         # 全靠它插入 (漏带 = dsh 裸官方形态, 42 号批次实测翻车)

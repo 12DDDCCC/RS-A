@@ -215,28 +215,6 @@ def _require_auth(user_id: str, authorization: str) -> None:
 
 # ---------- 端点 ----------
 
-# 桌面版内置 UI (exe 打包后由 launcher 自动打开浏览器到 /)
-# frozen 下 datas 有两种落点 (spec 变更兼容): _MEIPASS/static 或
-# _MEIPASS/src/static —— 双候选探测, 源码形态命中第一个
-_STATIC_UI = next(
-    (c for c in (
-        Path(__file__).resolve().parents[1] / "static" / "ui",
-        Path(__file__).resolve().parents[1] / "src" / "static" / "ui",
-    ) if (c / "index.html").exists()),
-    None,
-)
-if _STATIC_UI is not None:
-    from fastapi.staticfiles import StaticFiles
-    from fastapi.responses import RedirectResponse
-
-    app.mount("/ui", StaticFiles(directory=str(_STATIC_UI), html=True),
-              name="ui")
-
-    @app.get("/", include_in_schema=False)
-    def _root():
-        return RedirectResponse(url="/ui/")
-
-
 @app.post("/llm-config")
 def llm_config(req: LLMConfigRequest):
     """桌面版向导: 运行时配置 LLM Key (立即生效 + 持久化 rs-a.env)。
