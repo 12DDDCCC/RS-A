@@ -127,6 +127,51 @@ def _enable_context_menu(window) -> None:
     _try()
 
 
+def _data_backup_dir(app_dir: Path) -> Path:
+    """数据备份区: 放在 exe 目录的**外层** (cache/dist/rs-a-data)。
+
+    PyInstaller --noconfirm 重打包会清空 dist/RS-A 整个目录 (49号事故:
+    主密钥/GEE 凭证/任务库被抹, dsh 拿到空令牌全部 401) —— 备份区在其外,
+    重建不波及。源码形态 = 仓库根/rs-a-data, 同理躲开各路清理。
+    """
+    return app_dir.parent / "rs-a-data"
+
+
+def _restore_data(app_dir: Path) -> None:
+    """启动时从备份区还原 rs-a.env / cache/secrets / jobs.db (缺失才还)。"""
+    b = _data_backup_dir(app_dir)
+    if not b.exists():
+        return
+    if not (app_dir / "rs-a.env").exists() and (b / "rs-a.env").exists():
+        shutil.copy2(b / "rs-a.env", app_dir / "rs-a.env")
+    sec = app_dir / "cache" / "secrets"
+    if not sec.exists() and (b / "secrets").exists():
+        shutil.copytree(b / "secrets", sec)
+    if not (app_dir / "cache" / "jobs.db").exists() and (b / "jobs.db").exists():
+        (app_dir / "cache").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(b / "jobs.db", app_dir / "cache" / "jobs.db")
+
+
+def _backup_data(app_dir: Path) -> None:
+    """把当前密钥/凭证/任务库刷新进备份区 (每次启动时执行)。"""
+    b = _data_backup_dir(app_dir)
+    try:
+        b.mkdir(parents=True, exist_ok=True)
+        if (app_dir / "rs-a.env").exists():
+            shutil.copy2(app_dir / "rs-a.env", b / "rs-a.env")
+        sec = app_dir / "cache" / "secrets"
+        if sec.exists():
+            dst = b / "secrets"
+            dst.mkdir(parents=True, exist_ok=True)
+            for f in sec.iterdir():
+                shutil.copy2(f, dst / f.name)
+        jb = app_dir / "cache" / "jobs.db"
+        if jb.exists():
+            shutil.copy2(jb, b / "jobs.db")
+    except Exception:
+        pass  # 备份失败不阻塞启动 (监测通道留痕)
+
+
 def _fernet_ok(key: str) -> bool:
     """key 是否为合法 Fernet 密钥 (32 字节 url-safe base64)。"""
     try:
@@ -300,7 +345,9 @@ def main() -> None:
     _utf8_console()
     app_dir = _app_dir()
     os.chdir(app_dir)          # cache/ jobs.db runs logs 全部落 exe 旁
+    _restore_data(app_dir)     # 重打包清空 dist 后自动找回密钥/凭证/任务库
     _ensure_env(app_dir)
+    _backup_data(app_dir)      # 刷新备份区 (密钥/凭证/任务库)
     # 打包形态下 src 包在 _internal, 把它加进 import 路径
     if getattr(sys, "frozen", False):
         internal = Path(getattr(sys, "_MEIPASS", app_dir / "_internal"))
