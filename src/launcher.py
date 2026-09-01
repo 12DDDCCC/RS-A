@@ -81,6 +81,52 @@ def _error_html(reason: str) -> str:
 </body></html>"""
 
 
+def _enable_context_menu(window) -> None:
+    """打开 WebView2 默认右键菜单 (复制/粘贴)。
+
+    pywebview 把 AreDefaultContextMenusEnabled 绑死在 debug 模式 (49号实测),
+    正式包右键无菜单 → 复制只能靠 Ctrl+C。CoreWebView2 属 UI(STA) 线程 ——
+    后台线程直访永远 COM 失败, 必须经 WinForms Invoke 派发; 初始化异步,
+    未就绪则 0.5s 退避重试 (共 30s)。
+    """
+    from System import Func, Type
+
+    def _try(tries: int = 0) -> None:
+        native = getattr(window, "native", None)
+        wv = getattr(native, "webview", None)
+        if native is None or wv is None:
+            if tries < 60:
+                threading.Timer(0.5, lambda: _try(tries + 1)).start()
+            return
+
+        done = []
+
+        def _flip() -> None:
+            try:
+                wv.CoreWebView2.Settings.AreDefaultContextMenusEnabled = True
+                done.append(True)
+                print("  右键菜单: 已开启 ✓")
+            except Exception as e:
+                done.append(False)
+                if not hasattr(wv, "_rs_logged"):
+                    setattr(wv, "_rs_logged", True)
+                    print(f"  右键菜单: 首次未就绪 ({type(e).__name__}), 重试中…")
+
+        try:
+            native.Invoke(Func[Type](_flip))
+        except Exception as e:
+            print(f"  右键菜单: Invoke 异常 {type(e).__name__}: {e}")
+            done.append(False)
+
+        if not done or not done[0]:
+            if tries < 60:
+                threading.Timer(0.5, lambda: _try(tries + 1)).start()
+            elif tries == 60:
+                print("  右键菜单: 30s 重试后仍未开启 (放弃)")
+
+    _try()
+
+
 def _fernet_ok(key: str) -> bool:
     """key 是否为合法 Fernet 密钥 (32 字节 url-safe base64)。"""
     try:
@@ -300,13 +346,21 @@ def main() -> None:
         return
 
     # 体验核心: 窗口立刻出现 (暗色加载页), dsh 编排全部后台化
+    # text_select=True: pywebview 默认给 body 注入 user-select:none (整窗禁选),
+    # 不开则聊天内容无法选中复制 (49号)
     window = webview.create_window(
         "RS-A · 俯瞰世界",
         html=LOADING_HTML,
         width=1366, height=850, min_size=(960, 620),
         background_color="#0f1115",
+        text_select=True,
     )
-    window.events.shown += lambda: _force_dark_titlebar(window)
+
+    def _on_shown() -> None:
+        _force_dark_titlebar(window)
+        _enable_context_menu(window)
+
+    window.events.shown += _on_shown
 
     def _bootstrap() -> None:
         if ensure_dsh_up(app_dir):
