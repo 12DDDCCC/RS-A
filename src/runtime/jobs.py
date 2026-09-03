@@ -18,6 +18,7 @@ from __future__ import annotations
 from src.paths import cache_root as paths_cache_root
 
 import json
+import os
 import sqlite3
 import threading
 import uuid
@@ -34,6 +35,11 @@ DB_PATH = CACHE_DIR / "jobs.db"
 # 全局并发上限: 防多用户把线程与平台配额同时打爆 (蓝图 P0-4)
 MAX_CONCURRENT = 4
 _slots = threading.Semaphore(MAX_CONCURRENT)
+
+# 单用户并发上限 (2026-09-01 并发改造): 原为"单飞"(同用户 1 个任务),
+# 多时相对比类任务 (如近5年逐期分析) 需同时跑多个; 上限防单用户占满
+# 全局槽位。可 env 覆盖 (桌面单机形态想全开可调到 MAX_CONCURRENT)。
+MAX_PER_USER = int(os.environ.get("REMOTE_SENSING_MAX_PER_USER", "3"))
 
 # 状态机: queued -> running -> (need_clarify -> queued) | done | failed
 STATUSES = ("queued", "running", "need_clarify", "done", "failed")
@@ -112,8 +118,20 @@ class JobStore:
         with self._lock, self._conn() as conn:
             conn.execute(f"UPDATE jobs SET {', '.join(sets)} WHERE task_id = ?", params)
 
+    def running_count(self, user_id: str) -> int:
+        """该用户当前 queued/running 任务数 (并发上限判据)。"""
+        with self._conn() as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM jobs WHERE user_id = ? AND status IN ('queued','running')",
+                (user_id,),
+            ).fetchone()
+        return int(row[0]) if row else 0
+
     def has_running(self, user_id: str) -> str | None:
-        """per-user 单飞: 同用户已有 running/queued 任务则返回其 task_id。"""
+        """兼容旧接口: 该用户任一在跑任务的 task_id (无则 None)。
+
+        语义变化 (2026-09-01 并发改造): 不再用于单飞拦截, 仅诊断用途。
+        """
         with self._conn() as conn:
             row = conn.execute(
                 "SELECT task_id FROM jobs WHERE user_id = ? AND status IN ('queued','running') "

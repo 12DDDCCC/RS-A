@@ -52,6 +52,10 @@ _MESSAGES: dict[str, tuple[str, str]] = {
         "试算耗时过长, 已自动停止",
         "建议缩小分析范围(比如只分析一个城市)或缩短时间范围后重试",
     ),
+    "GEE_NETWORK": (
+        "连不上卫星数据平台 (Google Earth Engine)",
+        "请检查网络后重试: 国内网络需要先开启代理/VPN 才能访问 Google 服务",
+    ),
     "SANDBOX_REJECTED": (
         "试算结果明显异常, 已停止正式计算",
         "建议换个时间范围重试(云太多时结果会异常)",
@@ -76,6 +80,8 @@ _RULES: list[tuple[str, re.Pattern]] = [
     ("NO_REGION", re.compile(r"缺少区域信息|未提供.*区域|无法确定.*区域")),
     ("LLM_NOT_CONFIGURED", re.compile(r"未配置 LLM|llm_callbacks")),
     ("NO_CREDS", re.compile(r"凭证无效或未配置|无已存储凭证|凭证未配置|凭证服务不可用")),
+    # 网络故障优先于沙箱规则: 网络错的文本带 [沙箱] 前缀, 但根因是网络不是代码
+    ("GEE_NETWORK", re.compile(r"GEE_NETWORK")),
     ("SANDBOX_TIMEOUT", re.compile(r"试跑超时")),
     ("SANDBOX_REJECTED", re.compile(r"\[沙箱\]")),
     ("CODEGEN_FAILED", re.compile(r"代码生成未通过三层防护")),

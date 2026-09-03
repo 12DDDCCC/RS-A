@@ -306,3 +306,29 @@ def test_answer_wrong_status_rejected(client, with_creds, monkeypatch):
 
 def test_task_not_found(client):
     assert client.get("/tasks/nonexistent").status_code == 404
+
+
+def test_analyze_concurrency_ceiling(client, with_creds):
+    """per-user 并发上限: 达 MAX_PER_USER 个在跑任务时第 N+1 个 409 (2026-09-01)。
+
+    并发改造: 原单飞(1个)上限改为 MAX_PER_USER(默认3); 低于上限的并发提交
+    全部 202。测试内直接向 store 播种 queued 任务模拟"在跑"。
+    """
+    import src.main as main_mod
+    from src.runtime.jobs import MAX_PER_USER
+
+    c, H = with_creds
+    for _i in range(MAX_PER_USER):
+        main_mod.store.create("u1", {"user_input": f"t{_i}", "user_id": "u1"})
+    r = c.post("/analyze", headers=H,
+               json={"user_id": "u1", "user_input": "北京植被", "place": "北京"})
+    assert r.status_code == 409
+    assert r.json()["detail"]["code"] == "ALREADY_RUNNING"
+    assert str(MAX_PER_USER) in r.json()["detail"]["message"]
+
+    # 释放一个名额后可再提交 (queued -> done)
+    main_mod.store.update(
+        main_mod.store.has_running("u1"), status="done")
+    r2 = c.post("/analyze", headers=H,
+                json={"user_id": "u1", "user_input": "北京植被", "place": "北京"})
+    assert r2.status_code == 202

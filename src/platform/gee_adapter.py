@@ -26,6 +26,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import threading
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutTimeout
 from pathlib import Path
 
@@ -33,7 +34,13 @@ from src.platform.base import ExecutionResult, RemoteSensingPlatform
 
 _EXECUTE_TIMEOUT_S = 240
 _EXECUTE_TIMEOUT_MAX_S = 600   # max 挡高清: 分块取数 + 亿级像素 savefig 需更久
+_INIT_TIMEOUT_S = 30           # 初始化网络超时 (Google 端点不可达时快速失败)
 _JPEG_MAGIC = b"\xff\xd8"
+
+# 网络故障哨兵: 错误文本携带该标记时, 上层 (generator/nodes/errors) 应立即
+# 失败而不是重试 —— 网络不通与代码质量无关, 重试只烧 token (2026-09-01
+# 实测: Google 端点直连超时被伪装成 60s 沙箱超时 x3 次重试, 全链路误导)。
+GEE_NETWORK = "GEE_NETWORK"
 
 
 def _build_credentials(credentials: dict):
@@ -66,6 +73,91 @@ def _build_credentials(credentials: dict):
     raise ValueError("凭证缺少 key_json 或 key_path")
 
 
+_init_lock = threading.Lock()
+_inited_account: str = ""   # 最近一次成功初始化的账号标识 (进程级缓存)
+
+
+def _init_ee(creds, project: str | None, account_key: str) -> None:
+    """初始化全局 ee 会话 (并发安全 + 网络故障快速失败)。
+
+    ee.Initialize 写进程级全局态: 并发任务重复初始化既浪费 (每次 OAuth 往返)
+    又互相覆盖。同账号只初始化一次, 进程内缓存; 换账号时重新初始化
+    (跨账号真并发仍是进程内 exec 架构的已知限制 —— 单机桌面单账号形态
+    不受影响)。
+
+    网络不通时 30s 内抛 ConnectionError(带 GEE_NETWORK 哨兵), 而不是任由
+    requests 无超时的系统级连接等待 (实测 Windows 上单地址 ~21s x 多地址
+    x 多次重试, 远超沙箱 60s 窗口, 把网络故障伪装成"代码超时")。
+
+    失败负缓存 (熔断 lite): 初始化失败后 30s 内后续任务不再排队等锁重试
+    OAuth, 直接快速失败 —— 否则并发 N 个网络故障任务在 _init_lock 上
+    串行 30s x N (实测 3 任务 38s/70s/130s 阶梯)。网络恢复后缓存过期
+    自动重试成功。
+    """
+    import time as _time
+
+    import ee
+
+    global _inited_account
+
+    with _init_lock:
+        # 缓存命中判定。ee 就绪探测 API 蛇形/驼峰两代命名并存
+        # (1.7.x 为 is_initialized; 实测踩坑: 写错成 isInitialized 时网络故障
+        # 的短路求值恰好保护它, 网络恢复后第二次 execute 才 AttributeError)
+        _is_inited = (getattr(ee.data, "is_initialized", None)
+                      or getattr(ee.data, "isInitialized", None))
+        if account_key == _inited_account and (_is_inited is None or _is_inited()):
+            return
+        if _time.monotonic() - _init_fail_at < _INIT_FAIL_CACHE_S:
+            raise ConnectionError(
+                f"{GEE_NETWORK}: 连接 Google 服务最近一次尝试失败, "
+                f"{_INIT_FAIL_CACHE_S:.0f}s 内不重复尝试 (网络不通或代理未开启)")
+
+        def _do() -> None:
+            if project:
+                ee.Initialize(creds, project=project)
+            else:
+                ee.Initialize(creds)
+
+        pool = ThreadPoolExecutor(max_workers=1)
+        try:
+            pool.submit(_do).result(timeout=_INIT_TIMEOUT_S)
+        except (FutTimeout, ConnectionError) as e:
+            _mark_init_fail()
+            if isinstance(e, FutTimeout):
+                raise ConnectionError(
+                    f"{GEE_NETWORK}: 连接 Google 服务超时 (>{_INIT_TIMEOUT_S}s), "
+                    "网络不通或代理未开启") from e
+            raise ConnectionError(
+                f"{GEE_NETWORK}: 无法连接 Google 服务 ({e})") from e
+        except Exception as e:
+            msg = str(e)
+            if ("oauth2.googleapis.com" in msg or "earthengine.googleapis.com" in msg
+                    or "timed out" in msg.lower() or "timeout" in msg.lower()):
+                _mark_init_fail()
+                raise ConnectionError(
+                    f"{GEE_NETWORK}: 无法连接 Google 服务 ({msg[:200]})") from e
+            raise  # 非网络错 (凭证无效等) 原样上抛, 由调用方给人话分类
+        finally:
+            # wait=False: 超时路径不等待挂死的连接线程 (with 语句会在 __exit__
+            # 阻塞等线程, 让 30s 快速失败形同虚设)
+            pool.shutdown(wait=False, cancel_futures=True)
+        _inited_account = account_key
+
+
+def _mark_init_fail() -> None:
+    global _init_fail_at
+    import time as _time
+
+    _init_fail_at = _time.monotonic()
+
+
+_init_lock = threading.Lock()
+_inited_account: str = ""    # 最近一次成功初始化的账号标识 (进程级缓存)
+_init_fail_at: float = 0.0   # 最近一次初始化失败的单调时钟 (负缓存)
+_INIT_FAIL_CACHE_S = 30.0
+
+
 class GEEAdapter(RemoteSensingPlatform):
     """GEE 适配器 (真实实现)。"""
 
@@ -84,19 +176,33 @@ class GEEAdapter(RemoteSensingPlatform):
 
         import ee
         project = credentials.get("gee_project") or kwargs.get("gee_project")
+        account_key = str(creds.service_account_email)
         try:
-            # 每次调用独立初始化 (per-user), 不污染全局; project 缺省用凭证文件里的
-            if project:
-                ee.Initialize(creds, project=project)
-            else:
-                ee.Initialize(creds)
+            # 并发安全 + 网络快速失败 (30s 超时, GEE_NETWORK 哨兵)
+            _init_ee(creds, project, account_key)
+        except ConnectionError as e:
+            return ExecutionResult(success=False, error=str(e))
         except Exception as e:
             # 异常文本只含 Google 返回的信息, 不含私钥本体
             return ExecutionResult(success=False, error=f"GEE 初始化失败: {e}")
 
         fd, tmp_code = tempfile.mkstemp(suffix=".py", prefix="gee_run_")
         out_jpeg = Path(tempfile.gettempdir()) / f"{os.path.basename(tmp_code)}.jpg"
-        ns = {
+
+        class _ExecNS(dict):
+            """exec 命名空间: OUTPUT_JPEG 由系统注入, 模型覆盖一律忽略。
+
+            幻觉场景 (50号实测): 模型自写 OUTPUT_JPEG='/workspace/output.jpg'
+            覆盖注入值 → savefig 落到不存在目录 → FileNotFoundError → 沙箱误拒。
+            静默忽略该键赋值后, savefig(OUTPUT_JPEG) 恒落系统临时产物路径。
+            """
+
+            def __setitem__(self, key, value):
+                if key == "OUTPUT_JPEG":
+                    return
+                super().__setitem__(key, value)
+
+        ns = _ExecNS({
             "ee": ee,
             # GAUL 区县模式 region 为 None: 代码按 PLACE 从 GAUL level2 动态取 roi
             "REGION": dict(region) if region else None,
@@ -108,7 +214,7 @@ class GEEAdapter(RemoteSensingPlatform):
             "QUALITY_TIER": str(kwargs.get("quality") or "standard"),
             "OUTPUT_JPEG": str(out_jpeg),
             "METRICS": {},
-        }
+        })
 
         def _run() -> None:
             exec(compile(code, "<gee-generated>", "exec"), ns)  # noqa: S102 - D=1 契约

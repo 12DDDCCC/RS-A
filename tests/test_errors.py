@@ -45,3 +45,12 @@ def test_unknown_falls_to_internal():
     ue = classify_error("某个没见过的错误")
     assert ue.code == "INTERNAL"
     assert ue.suggestion  # 内部错误也给出建议动作
+
+
+def test_gee_network_priority_over_sandbox():
+    """网络故障优先于沙箱规则: 带 [沙箱] 前缀的网络错应归因网络 (2026-09-01)。"""
+    ue = classify_error("[沙箱] GEE_NETWORK: 连接 Google 服务超时 (>30s), 网络不通或代理未开启")
+    assert ue.code == "GEE_NETWORK"
+    assert "代理" in ue.suggestion or "网络" in ue.suggestion
+    ue2 = classify_error("云端执行失败: GEE_NETWORK: 无法连接 Google 服务 (...)")
+    assert ue2.code == "GEE_NETWORK"

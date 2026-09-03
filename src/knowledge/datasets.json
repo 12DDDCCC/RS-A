@@ -144,7 +144,18 @@
       "note": "Landsat 8(LC08)波段编号相同可复用;Landsat 7编号不同,跨传感器不可复用SR_B4/SR_B5",
       "landsat8_collection_id": "LANDSAT/LC08/C02/T1_L2",
       "source_url": "https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC09_C02_T1_L2",
-      "_verified": true
+      "_verified": true,
+      "mask_bands": {
+        "_note": "掩膜/质量波段, Collection 2 L2 官方 QA (同样进validator白名单)",
+        "QA_PIXEL": {
+          "description": "像元质量位 (Fill/DilatedCloud/Cloud/CloudShadow/Snow), C2 标准去云依据",
+          "resolution_m": 30
+        },
+        "QA_RADSAT": {
+          "description": "辐射饱和位 (波段饱和标志)",
+          "resolution_m": 30
+        }
+      }
     },
     "sentinel1_grd": {
       "name": "Sentinel-1 SAR 合成孔径雷达 (GRD)",

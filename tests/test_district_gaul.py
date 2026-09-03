@@ -101,6 +101,9 @@ def test_analyze_city_without_district_stays_bbox(client, monkeypatch):
         def has_running(self, uid):
             return False
 
+        def running_count(self, uid):
+            return 0
+
     import src.main as main_mod
 
     monkeypatch.setattr(main_mod, "store", _Store())

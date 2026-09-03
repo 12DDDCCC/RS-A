@@ -167,7 +167,7 @@ import time as _time
 from collections import defaultdict, deque
 from threading import Lock
 
-_RATE_LIMIT = 6          # 每 user 每分钟最多提交次数 (MVP 经验值)
+_RATE_LIMIT = 10         # 每 user 每分钟最多提交次数 (并发改造 6→10: 多任务并发提交不再误伤)
 _RATE_WINDOW_S = 60.0
 _submit_history: dict[str, deque] = defaultdict(deque)
 _rl_lock = Lock()
@@ -458,12 +458,15 @@ def analyze(req: AnalyzeRequest, background: BackgroundTasks,
             "suggestion": "请先绑定你的卫星数据平台账号 (前端右上角「绑定账号」)",
         })
 
-    # 3) per-user 单飞: 同用户已有在跑任务 -> 409
-    running = store.has_running(req.user_id)
-    if running:
+    # 3) per-user 并发上限: 同用户在跑任务数达上限 -> 409
+    #    (2026-09-01 并发改造: 原为单飞 1 个; 多时相任务需并发, 上限 3 可 env 覆盖)
+    from src.runtime.jobs import MAX_PER_USER
+    running_n = store.running_count(req.user_id)
+    if running_n >= MAX_PER_USER:
+        running = store.has_running(req.user_id)
         raise HTTPException(status_code=409, detail={
             "code": "ALREADY_RUNNING",
-            "message": "你已有一个分析正在进行",
+            "message": f"你已有 {running_n} 个分析在进行, 最多同时 {MAX_PER_USER} 个",
             "task_id": running,
         })
 

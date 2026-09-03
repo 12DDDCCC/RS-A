@@ -67,7 +67,8 @@ GENERATOR_SYSTEM_PROMPT = (
 
 产出契约 (必须, 缺一即失败):
 - OUTPUT_JPEG: str — 系统注入的结果图输出路径, 必须 plt.savefig(OUTPUT_JPEG);
-  禁止自编输出路径 (示例: 直接写 "/workspace/xx.jpg" 必失败)。
+  严禁给 OUTPUT_JPEG 变量赋值或自编绝对路径 (写 "/workspace/xx.jpg" 必失败;
+  系统层会忽略对 OUTPUT_JPEG 的覆盖赋值, 无需也无法自行指定路径)。
   出图用 matplotlib (Agg 后端): import matplotlib; matplotlib.use("Agg")。
   中文标题缺失字体时用英文, 绝不因字体崩。
   colormap 取法: import matplotlib as mpl 之后用 mpl.colormaps["viridis"]
@@ -230,6 +231,10 @@ def generate_and_validate(
         if not s.success:
             feedback_history.append(f"[第{attempt}次] 沙箱拒绝: {s.error}")
             record_failure(make_entry(task, code, "sandbox", feedback_history[-1]))
+            if "GEE_NETWORK" in (s.error or ""):
+                # 网络不通与代码质量无关: 立即失败, 重试只烧 token
+                # (2026-09-01 实测: 网络故障被当代码问题重试 3 次全超时)
+                break
             continue
 
         # 全过

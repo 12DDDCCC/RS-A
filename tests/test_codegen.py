@@ -237,3 +237,42 @@ def test_pipeline_hits_max_attempts():
     result = generate_and_validate("植被", REGION, TEST_USER, fake_gen, max_attempts=2)
     assert not result.ready
     assert result.attempts == 2
+
+
+def test_pipeline_breaks_on_gee_network_error(monkeypatch):
+    """沙箱网络故障 (GEE_NETWORK 哨兵) 立即失败, 不再烧 LLM 重试 (2026-09-01)。
+
+    修复前: 网络不通被当"代码超时", 3 轮重试每轮 60s 沙箱超时 + LLM 生成。
+    """
+    from src.codegen import generator as gen_mod
+    from src.platform.base import ExecutionResult
+
+    calls = {"n": 0}
+
+    def fake_gen(prompt):
+        calls["n"] += 1
+        return "img = load('COPERNICUS/S2_SR_HARMONIZED')\nresult = img"
+
+    def fake_sandbox(code, user_id, region, **kw):
+        return ExecutionResult(success=False,
+                               error="GEE_NETWORK: 连接 Google 服务超时 (>30s)")
+
+    monkeypatch.setattr(gen_mod, "sandbox_trial", fake_sandbox)
+    result = generate_and_validate("植被", REGION, TEST_USER, fake_gen, max_attempts=3)
+    assert not result.ready
+    assert calls["n"] == 1          # 第一轮网络失败后立即断路, 没有第二轮
+    assert "GEE_NETWORK" in result.feedback_history[-1]
+
+
+def test_validator_alt_cid_includes_mask_bands():
+    """备用 Collection ID (LC08) 的波段表必须含掩膜波段 (2026-09-01 顺序修复)。
+
+    修复前: mask_bands 在备用 ID 拷贝之后才并入主表 -> LC08 永远缺 QA_PIXEL,
+    计划选 LC08+QA_PIXEL 被 planning/validator 冤杀。
+    """
+    from src.codegen.validator import DATASET_BANDS
+
+    lc08 = DATASET_BANDS.get("LANDSAT/LC08/C02/T1_L2")
+    assert lc08 is not None
+    assert "QA_PIXEL" in lc08 and "QA_RADSAT" in lc08
+    assert "SR_B5" in lc08  # 主表波段仍在

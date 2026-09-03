@@ -116,3 +116,16 @@ def test_per_user_single_flight(store):
     store.create("u5", {"user_input": "a", "user_id": "u5"})
     assert store.has_running("u5") is not None
     assert store.has_running("nobody") is None
+
+
+def test_running_count_for_concurrency(store):
+    """并发上限判据: 同用户多任务在跑时计数正确 (2026-09-01 并发改造)。"""
+    assert store.running_count("u6") == 0
+    t1 = store.create("u6", {"user_input": "a", "user_id": "u6"})
+    t2 = store.create("u6", {"user_input": "b", "user_id": "u6"})
+    store.create("other", {"user_input": "c", "user_id": "other"})
+    assert store.running_count("u6") == 2
+    # 终态后不再计数
+    store.update(t1, status="done")
+    store.update(t2, status="failed")
+    assert store.running_count("u6") == 0

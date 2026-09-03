@@ -26,9 +26,17 @@ def _build_whitelist() -> tuple[set[str], set[str], dict[str, set[str]]]:
             collection_ids.add(cid)
             if ds.get("bands"):
                 dataset_bands[cid] = set(ds["bands"].keys())
+            # 掩膜/分类波段 (SCL/QA60/QA_PIXEL, 官方目录无物理波长故在知识库单列一表)
+            # 同属本数据集的合法波段, 并入波段表供交叉校验
+            # (下划线开头的是知识库元数据说明, 不是波段)
+            # 2026-09-01 顺序修复: 必须在备用 ID 拷贝之前并入 —— 否则 LC08 等
+            # 备用入口永远拿不到掩膜波段 (实测: 计划选 LC08+QA_PIXEL 被冤杀)
+            if ds.get("mask_bands"):
+                masks = {b for b in ds["mask_bands"] if not b.startswith("_")}
+                dataset_bands.setdefault(cid, set()).update(masks)
             # 同族备用 Collection ID: landsat8_collection_id (旧字段, LC08 复用
             # LC09 波段表) + alt_collection_ids 通用列表 (GAUL 父路径/简化变体
-            # 等官方同族入口) —— 均复用主波段表, 防止同族入口被误拒
+            # 等官方同族入口) —— 均复用主波段表 (含掩膜波段), 防止同族入口被误拒
             alt_cids = []
             if ds.get("landsat8_collection_id"):
                 alt_cids.append(ds["landsat8_collection_id"])
@@ -37,12 +45,6 @@ def _build_whitelist() -> tuple[set[str], set[str], dict[str, set[str]]]:
                 collection_ids.add(alt_cid)
                 if cid in dataset_bands:
                     dataset_bands[alt_cid] = set(dataset_bands[cid])
-            # 掩膜/分类波段 (SCL/QA60, 官方目录无物理波长故在知识库单列一表)
-            # 同属本数据集的合法波段, 并入波段表供交叉校验
-            # (下划线开头的是知识库元数据说明, 不是波段)
-            if ds.get("mask_bands"):
-                masks = {b for b in ds["mask_bands"] if not b.startswith("_")}
-                dataset_bands.setdefault(cid, set()).update(masks)
         for b in ds.get("bands", {}):
             band_names.add(b)
         band_names.update(

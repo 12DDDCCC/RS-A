@@ -195,8 +195,10 @@ def node_generate(state: dict) -> dict:
                            state.get("quality", "standard"))
     if tpl_hit is not None and not state.get("retry_hint"):
         code, params = tpl_hit
+        span = (params.years[0] if len(params.years) == 1
+                else f"{params.years[0]}-{params.years[-1]}")
         _emit(state, "stage",
-              f"命中模板管线 ({params.template_id}, {params.year}年) — 免LLM直出")
+              f"命中模板管线 ({params.template_id}, {span}年) — 免LLM直出")
         v = validate_code(code)
         d = verify_domain(code)
         if v.passed and d.passed:
@@ -204,6 +206,11 @@ def node_generate(state: dict) -> dict:
             if s.success and not s.looks_anomalous():
                 state["generated_code"] = code
                 state["template_used"] = params.template_id
+                return state
+            if "GEE_NETWORK" in (s.error or ""):
+                # 网络不通: 直接失败 (人话由 errors.GEE_NETWORK 给出),
+                # 转自由生成只会烧 3 轮 LLM 再同样超时
+                state["error"] = str(s.error)
                 return state
             state["retry_hint"] = f"模板试跑未过 ({(s.error or '结果异常')[:80]}), 转自由生成"
         else:

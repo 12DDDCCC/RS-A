@@ -37,7 +37,11 @@ REVIEWER_SYSTEM_PROMPT = """你是遥感代码审查员。你的任务是找出�
 - ee: 已初始化的 earthengine 模块 (代码不应再调 ee.Initialize/Authenticate)
 - REGION: dict {lon_min, lat_min, lon_max, lat_max} 目标区域
 - TASK: str 任务原文
-- 代码必须产出: OUTPUT_JPEG (str, 结果 JPEG 路径) 与 METRICS (dict, 含 ndvi_mean/nir_mean/red_mean/valid_ratio)
+- SANDBOX: bool 沙箱试跑标志 (True 时代码应缩小网格/只算首年快速验证)
+- QUALITY_TIER: str 出图挡位 standard|high|max
+- PLACE: str 行政区名 (区县 GAUL 模式用它解析 roi, 此时 REGION 可能为 None)
+- 代码必须产出: OUTPUT_JPEG (str, 结果 JPEG 路径, 系统已注入不得覆盖) 与
+  METRICS (dict, 含 ndvi_mean/nir_mean/red_mean/valid_ratio)
 - 出图允许 matplotlib(Agg) + ee.data.computePixels; getThumbURL 无权限属预期
 
 你只审查, 不改写。发现问题就 approved=false 并列出问题。
